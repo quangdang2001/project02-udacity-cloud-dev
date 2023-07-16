@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { filterImageFromURL, deleteLocalFiles } from './util/util';
-import e from 'express';
+import { Request, Response, NextFunction } from 'express';
 require('dotenv').config();
 
 (async () => {
@@ -15,23 +15,24 @@ require('dotenv').config();
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
 
-  app.get("/filteredimage", async (req, res, next) => {
-    let publicUrl = req.query.image_url
-    let url
+  app.get("/filteredimage", async (req: Request, res: Response, next: NextFunction) => {
+    let imageUrl: string = req.query.image_url
+
     try {
-      url = await filterImageFromURL(publicUrl)
+      let url: string = await filterImageFromURL(imageUrl)
+      res.sendFile(url, (e: any) => {
+        deleteLocalFiles(Array.of(url))
+      })
     } catch (error) {
       next(error)
     }
-    res.send(url)
-    deleteLocalFiles(Array.of(url))
   });
 
-  app.get("/", async (req, res, next) => {
+  app.get("/", async (req: Request, res: Response) => {
     res.send("GET")
   });
 
-  const errorHandler = (error: any, request: any, response: any, next: any) => {
+  const errorHandler = (error: any, request: Request, response: Response, next: NextFunction) => {
     const status = error.status || 422
     response.status(status).send(error.message)
   }
