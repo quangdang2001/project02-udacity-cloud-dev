@@ -16,10 +16,10 @@ require('dotenv').config();
   app.use(bodyParser.json());
 
   app.get("/filteredimage", async (req: Request, res: Response, next: NextFunction) => {
-    let publicUrl: string = req.query.image_url
+    let imageUrl: string = req.query.image_url
 
     try {
-      let url: string = await filterImageFromURL(publicUrl)
+      let url: string = await filterImageFromURL(imageUrl)
       res.sendFile(url, (e: any) => {
         deleteLocalFiles(Array.of(url))
       })
