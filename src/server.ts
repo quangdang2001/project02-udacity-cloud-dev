@@ -20,7 +20,9 @@ require('dotenv').config();
 
     try {
       let url: string = await filterImageFromURL(publicUrl)
-      res.sendFile(url)
+      res.sendFile(url, (e: any) => {
+        deleteLocalFiles(Array.of(url))
+      })
     } catch (error) {
       next(error)
     }
